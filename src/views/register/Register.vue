@@ -89,6 +89,26 @@ export default {
       return $dirty ? !$error : null;
     },
     register() {
+      // 验证数据
+      this.$v.user.$touch();
+      if (this.$v.user.$anyError) {
+        return;
+      }
+      // 请求
+      const api = 'http://localhost:1016/api/auth/register';
+      this.axios.post(api, { ...this.user }).then((res) => {
+        // 保存token
+        console.log(res.data);
+        localStorage.setItem('token', res.data.data.token);
+        // 跳转主页
+        this.$router.replace({ name: 'Home' });
+      }).catch((err) => {
+        this.$bvToast.toast(err.response.data.msg, {
+          title: '数据验证错误',
+          variant: 'danger',
+          solid: true,
+        });
+      });
       console.log('register');
     },
   },
