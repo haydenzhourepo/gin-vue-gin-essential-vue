@@ -56,6 +56,8 @@ import { required, minLength } from 'vuelidate/lib/validators';
 
 import customValidator from '@/helper/validator';
 
+import { mapActions } from 'vuex';
+
 export default {
   data() {
     return {
@@ -83,6 +85,7 @@ export default {
   },
 
   methods: {
+    ...mapActions('userModule', { userRegister: 'register' }),
     validateState(name) {
       // 这里是es6 解构赋值
       const { $dirty, $error } = this.$v.user[name];
@@ -95,11 +98,7 @@ export default {
         return;
       }
       // 请求
-      const api = 'http://localhost:1016/api/auth/register';
-      this.axios.post(api, { ...this.user }).then((res) => {
-        // 保存token
-        console.log(res.data);
-        localStorage.setItem('token', res.data.data.token);
+      this.userRegister(this.user).then(() => {
         // 跳转主页
         this.$router.replace({ name: 'Home' });
       }).catch((err) => {
@@ -109,7 +108,6 @@ export default {
           solid: true,
         });
       });
-      console.log('register');
     },
   },
 };
